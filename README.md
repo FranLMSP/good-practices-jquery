@@ -1,2 +1,2 @@
-# good-practices-jquery
+# Good practices jQuery
 This repository is like a readme for remember basic good practices with jQuery and improove the perfomance of our page

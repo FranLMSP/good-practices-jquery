@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Optimizing jquery</title>
+</head>
+<body>
+
+	<!-- DOM interaction is VERY heavy, so in this document you will found some basic tips for optimize your page with jQuery -->
+	<!-- The objetive is interact with the DOM as minus as possible -->
+
+	<!-- Let's supose we have a UL with a language's list -->
+	<ul id="languages">
+		
+	</ul>
+
+
+	<script type="text/javascript" src="jquery.min.css"></script>
+
+	<script type="text/javascript">
+			
+		//And will modified dinamically
+		var languages = [
+			'PHP',
+			'Python',
+			'Javascript',
+			'Ruby',
+			'HTML'
+		];
+
+		//First of all, for prevent make a selection every time, we can save the selector in a variable to make the selector only once
+		languagesDom = $('#languages');
+
+		//We need to put every language of the array to the UL tag
+		//Normally we do this
+		$.each(languages, function(index, value){
+			var newListItem = '<li>' + value + '</li>';
+			newListItem.appendTo('#languages'); //the problem with this is, we are alterating the DOM with every iteration
+		});
+
+		//A better way is this
+		var myHtml = '';
+		$.each(languages, function(index, value){
+			myHtml += '<li class="language">' + value + '</li>'; //make a string with all we need append with a class to select it easely
+		});
+		languagesDom.html(myHtml); //and append AFTER the bucle
+
+
+		//optimizing the LENGHT
+		var listItem = languagesDom.find('li');
+		//yeah, you believe it or not, in a bucle like this, javascript is asking for the length of the array for every iteration
+		for (var i=0; i<listItem.length ; i++)
+		{
+			//do stuff
+		}
+
+		//so is better to cache the lenght before make the loop
+		var listItemLenght = listItem.length;
+		for (var i=0; i<listItemLenght; i++)
+		{
+			//do stuff
+		}
+
+
+
+		//ALTER DOM TAGS MANY TIMES
+		//a good practice if we need modify a dom element, is fisrt having the parent, pulling out, and after push it back again
+		//like this
+		var languagesParent = languagesDom.parent();//getting the parent
+		languagesDom.detach(); //this will delete the element without removing the events attached to it 
+		//MODIFING 1 "languagesDom" ALL WE NEED HERE
+		//MODIFING 2 "languagesDom" ALL WE NEED HERE
+		//MODIFING 3 "languagesDom" ALL WE NEED HERE
+		languagesParent.append(languagesDom); //and pushing it back to the DOM
+
+
+		//UNEXISTENT DOM ELEMENTS
+		//another wood practice is comprobate if a DOM element exist before altering, if we need make an animation for example
+		if(languagesDom.length > 0)
+			lenguajesDom.slideUp();
+
+
+		//MANY ELEMENTS AT THE SAME TIME
+		//if we want know how mani LI tags have "#languages", normally we do this selector
+		$('#languages li');
+		//but this is a more optimal and native way
+		$('#languages').find('li'); //because jquery will search 'li' ONLY inside '#languages', but with '#languages li' he search in the whole DOM
+
+
+		//OPTIMIZING CSS MANIPULATION
+		//suposing we need to add a CSS to every LI element in languages
+		languagesDom.find('li').css('color', 'red'); //this works well at least 20 elements, after that is a little bit laggy
+		//we can add a new style tag with the modifications we want
+		$('<style type="text/css">#languages li{color: red}</style>').appendTo('head'); //this is a LOT faster
+
+	</script>
+</body>
+</html>
